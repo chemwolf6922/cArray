@@ -6,7 +6,7 @@ int main(int argc, void *argv)
     array_handle_t array;
     array_create(&array, sizeof(int));
     int data[] = {1, 2, 3, 4, 5};
-    for (int i = 0; i != 5; i++)
+    for (int i=0; i != 5; i++)
     {
         array_push(array, &data[i]);
     }
@@ -25,6 +25,18 @@ int main(int argc, void *argv)
         printf("%d,", *number);
     }
     printf("\n");
-
+    array_delete_index(array,1);
+    array_forEach(array, number)
+    {
+        printf("%d,",*number);
+    }
+    printf("\n");
+    array_clear(array);
+    array_forEach(array,number)
+    {
+        printf("%d,", *number);
+    }
+    printf("\n");
+    array_delete(array);
     return 0;
 }
