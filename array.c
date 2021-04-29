@@ -4,7 +4,6 @@
 #include <malloc.h>
 
 
-
 int array_create(array_handle_t *p_handle, int item_size)
 {
     array_t *array = (array_t *)malloc(sizeof(array_t));
@@ -136,7 +135,7 @@ void *array_find(array_handle_t handle, array_match_t match,void* arg)
 int array_find_index(array_handle_t handle,array_match_t match,void* arg)
 {
     void* data;
-    int i;
+    int i = 0;
     array_forEach(handle,data)
     {
         if(match(data,arg))

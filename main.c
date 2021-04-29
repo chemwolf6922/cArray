@@ -1,5 +1,11 @@
 #include "array.h"
 #include <stdio.h>
+#include <stdbool.h>
+
+bool match_int_value(void* data,void* arg)
+{
+    return *(int*)data == *(int*)arg;
+}
 
 int main(int argc, void *argv)
 {
@@ -26,6 +32,11 @@ int main(int argc, void *argv)
     }
     printf("\n");
     array_delete_index(array, 1);
+    int target = 5;
+    number = array_find(array,match_int_value,&target);
+    printf("value: %d\n",*number);
+    int index = array_find_index(array,match_int_value,&target);
+    printf("index: %d\n",index);
     array_forEach(array, number)
     {
         printf("%d,", *number);
