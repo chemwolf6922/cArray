@@ -19,7 +19,7 @@ int array_create(array_handle_t *p_handle, int item_size)
     return 0;
 }
 
-int array_push(array_handle_t handle, void *data)
+void* array_push(array_handle_t handle, void *data)
 {
     array_t *array = (array_t *)handle;
     array_node_t *node = array->tail;
@@ -28,12 +28,19 @@ int array_push(array_handle_t handle, void *data)
         node = (array_node_t *)malloc(sizeof(array_node_t) + array->item_size);
         if (node == NULL)
         {
-            return -1;
+            return NULL;
         }
         node->prev = NULL;
         node->next = NULL;
         node->data = (void*)(node + 1);
-        memcpy(node->data,data,array->item_size);
+        if(data != NULL)
+        {
+            memcpy(node->data,data,array->item_size);
+        }
+        else
+        {
+            memset(node->data,0,array->item_size);
+        }
         array->entry = node;
         array->tail = node;
         array->len ++;
@@ -43,17 +50,24 @@ int array_push(array_handle_t handle, void *data)
         array_node_t* new_node = (array_node_t*)malloc(sizeof(array_node_t) + array->item_size);
         if(new_node == NULL)
         {
-            return -1;
+            return NULL;
         }
         new_node->prev = node;
         new_node->next = NULL;
         new_node->data = (void*)(new_node + 1);
-        memcpy(new_node->data,data,array->item_size);
+        if(data != NULL)
+        {
+            memcpy(new_node->data,data,array->item_size);
+        }
+        else
+        {
+            memset(node->data,0,array->item_size);
+        }
         node->next = new_node;
         array->tail = new_node;
         array->len ++;
     }
-    return 0;
+    return array->tail->data;
 }
 
 int array_pop(array_handle_t handle,void* dst)
@@ -74,7 +88,10 @@ int array_pop(array_handle_t handle,void* dst)
         array->entry = NULL;
     }
     array->len --;
-    memcpy(dst,node->data,array->item_size);
+    if(dst != NULL)
+    {
+        memcpy(dst,node->data,array->item_size);
+    }
     free(node);
     return 0;
 }
@@ -97,7 +114,10 @@ int array_shift(array_handle_t handle,void* dst)
         array->tail = NULL;
     }
     array->len --;
-    memcpy(dst,node->data,array->item_size);
+    if(dst != NULL)
+    {
+        memcpy(dst,node->data,array->item_size);
+    }
     free(node);
     return 0;
 }
@@ -105,18 +125,36 @@ int array_shift(array_handle_t handle,void* dst)
 void *array_get(array_handle_t handle, int index)
 {
     array_t* array = (array_t*)handle;
-    int i = 0;
-    array_node_t* node = array->entry;
-    while(i!=index && node != NULL)
+    if(index >= 0)
     {
-        i++;
-        node = node->next;
+        int i = 0;
+        array_node_t* node = array->entry;
+        while(i!=index && node != NULL)
+        {
+            i++;
+            node = node->next;
+        }
+        if(i==index)
+        {
+            return node->data;
+        }
+        return NULL;
     }
-    if(i==index)
+    else
     {
-        return node->data;
+        int i = -1;
+        array_node_t* node = array->tail;
+        while(i!=index && node != NULL)
+        {
+            i--;
+            node = node->prev;
+        }
+        if(i==index)
+        {
+            return node->data;
+        }
+        return NULL;
     }
-    return NULL;
 }
 
 void *array_find(array_handle_t handle, array_match_t match,void* arg)
@@ -161,15 +199,33 @@ array_handle_t array_concat(array_handle_t A, array_handle_t B)
 int array_delete_index(array_handle_t handle,int i)
 {
     array_t* array = (array_t*)handle;
-    if(array->len <= i)
+    array_node_t* node = NULL;
+    // find node
+    if(i >= 0)
     {
-        return -1;
+        if(array->len <= i)
+        {
+            return -1;
+        }
+        node = array->entry;
+        for(int j=0;j!=i;j++)
+        {
+            node = node->next;
+        }
     }
-    array_node_t* node = array->entry;
-    for(int j=0;j!=i;j++)
+    else
     {
-        node = node->next;
+        if(array->len <= (0-i))
+        {
+            return -1;
+        }
+        node = array->tail;
+        for(int j=-1;j!=i;j--)
+        {
+            node = node->prev;
+        }
     }
+    // delete node
     if(node->prev!=NULL)
     {
         node->prev->next = node->next;
@@ -189,6 +245,39 @@ int array_delete_index(array_handle_t handle,int i)
     free(node);
     array->len --;
     return 0;
+}
+
+int array_delete_match(array_handle_t handle,array_match_t match,void* arg)
+{
+    array_t* array = (array_t*)handle;
+    array_node_t* node = array->entry;
+    while(node != NULL)
+    {
+        if(match(node->data,arg))
+        {
+            if(node->prev != NULL)
+            {
+                node->prev->next = node->next;
+            }
+            else
+            {
+                array->entry = node->next;
+            }
+            if(node->next != NULL)
+            {
+                node->next->prev = node->prev;
+            }
+            else
+            {
+                array->tail = node->prev;
+            }
+            free(node);
+            array->len --;
+            return 0;
+        }
+        node = node->next;
+    }
+    return -1;
 }
 
 int array_clear(array_handle_t handle)

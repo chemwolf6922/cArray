@@ -31,7 +31,7 @@ int main(int argc, void *argv)
         printf("%d,", *number);
     }
     printf("\n");
-    array_delete_index(array, 1);
+    array_delete_index(array, -1);
     int target = 5;
     number = array_find(array,match_int_value,&target);
     printf("value: %d\n",*number);

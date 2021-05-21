@@ -23,7 +23,10 @@ typedef void* array_handle_t;
 typedef bool (*array_match_t)(void* data,void* arg);
 
 int array_create(array_handle_t* p_handle,int item_size);
-int array_push(array_handle_t handle,void* data);
+/*
+    if data is NULL, push an empty item to the array
+*/
+void* array_push(array_handle_t handle,void* data);
 int array_pop(array_handle_t handle,void* dst);
 int array_shift(array_handle_t handle,void* dst);
 void* array_get(array_handle_t handle,int index);
@@ -32,6 +35,7 @@ int array_find_index(array_handle_t handle,array_match_t match,void* arg);
 int array_length(array_handle_t handle);
 array_handle_t array_concat(array_handle_t A,array_handle_t B);
 int array_delete_index(array_handle_t handle,int i);
+int array_delete_match(array_handle_t handle,array_match_t match,void* arg);
 int array_clear(array_handle_t handle);
 int array_delete(array_handle_t handle);
 
