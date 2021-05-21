@@ -193,7 +193,32 @@ int array_length(array_handle_t handle)
 
 array_handle_t array_concat(array_handle_t A, array_handle_t B)
 {
-    return NULL;
+    array_t* arrayA = (array_t*)A;
+    array_t* arrayB = (array_t*)B;
+    if(arrayA->item_size != arrayB->item_size)
+    {
+        return NULL;
+    }
+    array_handle_t C = NULL;
+    array_create(&C,arrayA->item_size);
+    void* item;
+    array_forEach(A,item)
+    {
+        if(array_push(C,item)==NULL)
+        {
+            array_delete(C);
+            return NULL;
+        }
+    }
+    array_forEach(B,item)
+    {
+        if(array_push(C,item)==NULL)
+        {
+            array_delete(C);
+            return NULL;
+        }
+    }
+    return C;
 }
 
 int array_delete_index(array_handle_t handle,int i)

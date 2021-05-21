@@ -42,6 +42,30 @@ int main(int argc, void *argv)
         printf("%d,", *number);
     }
     printf("\n");
+
+    target = 10;
+    array_delete_match(array,match_int_value,&target);
+    array_forEach(array, number)
+    {
+        printf("%d,", *number);
+    }
+    printf("\n");
+    
+    target = 4;
+    array_delete_match(array,match_int_value,&target);
+    array_forEach(array, number)
+    {
+        printf("%d,", *number);
+    }
+    printf("\n");
+
+    array_handle_t new_array = array_concat(array,array);
+    array_forEach(new_array,number)
+    {
+        printf("%d,",*number);
+    }
+    printf("\n");
+
     array_clear(array);
     array_forEach(array, number)
     {
