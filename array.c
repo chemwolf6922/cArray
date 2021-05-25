@@ -61,7 +61,7 @@ void* array_push(array_handle_t handle, void *data)
         }
         else
         {
-            memset(node->data,0,array->item_size);
+            memset(new_node->data,0,array->item_size);
         }
         node->next = new_node;
         array->tail = new_node;
