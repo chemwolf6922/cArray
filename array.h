@@ -27,6 +27,7 @@ int array_create(array_handle_t* p_handle,int item_size);
     if data is NULL, push an empty item to the array
 */
 void* array_push(array_handle_t handle,void* data);
+void* array_insert(array_handle_t handle,void* data,int index);
 int array_pop(array_handle_t handle,void* dst);
 int array_shift(array_handle_t handle,void* dst);
 void* array_get(array_handle_t handle,int index);

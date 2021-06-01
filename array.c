@@ -70,6 +70,50 @@ void* array_push(array_handle_t handle, void *data)
     return array->tail->data;
 }
 
+void* array_insert(array_handle_t handle,void* data,int index)
+{
+    array_t* array = (array_t*)handle;
+    if(index >= array->len)
+    {
+        return array_push(handle,data);
+    }
+    int i = 0;
+    array_node_t* node = array->entry;
+    while(i < index)
+    {
+        i++;
+        node = node->next;
+    }
+    array_node_t* new_node = (array_node_t*)malloc(sizeof(array_node_t) + array->item_size);
+    if(new_node == NULL)
+    {
+        return NULL;
+    }
+    // reconnect nodes
+    new_node->next = node;
+    new_node->prev = node->prev;
+    if(node->prev == NULL)
+    {
+        array->entry = new_node;
+    }
+    else
+    {
+        node->prev->next = new_node;
+    }
+    node->prev = new_node;
+    array->len ++;
+    // copy data
+    if(data != NULL)
+    {
+        memcpy(new_node->data,data,array->item_size);
+    }
+    else
+    {
+        memset(new_node->data,0,array->item_size);
+    }
+    return new_node->data;
+}
+
 int array_pop(array_handle_t handle,void* dst)
 {
     array_t* array = (array_t*)handle;
