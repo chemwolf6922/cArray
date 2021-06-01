@@ -92,6 +92,7 @@ void* array_insert(array_handle_t handle,void* data,int index)
     // reconnect nodes
     new_node->next = node;
     new_node->prev = node->prev;
+    new_node->data = (void*)(new_node + 1);
     if(node->prev == NULL)
     {
         array->entry = new_node;
@@ -171,6 +172,10 @@ void *array_get(array_handle_t handle, int index)
     array_t* array = (array_t*)handle;
     if(index >= 0)
     {
+        if(index >= array->len)
+        {
+            return NULL;
+        }
         int i = 0;
         array_node_t* node = array->entry;
         while(i!=index && node != NULL)
@@ -186,6 +191,10 @@ void *array_get(array_handle_t handle, int index)
     }
     else
     {
+        if(index < 0-array->len)
+        {
+            return NULL;
+        }
         int i = -1;
         array_node_t* node = array->tail;
         while(i!=index && node != NULL)
