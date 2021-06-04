@@ -293,7 +293,7 @@ int array_delete_index(array_handle_t handle,int i)
     }
     else
     {
-        if(array->len <= (0-i))
+        if(array->len < (0-i))
         {
             return -1;
         }
