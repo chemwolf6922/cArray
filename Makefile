@@ -1,12 +1,13 @@
 CC?=gcc
 AR?=ar
-BUILD_DIR?=build/
+BUILD_DIR?=$(shell pwd)/build/
 
 CFLAGS=-O3
 LDFLAGS=
 LIBS=
 
-APPSRCS=main.c array.c
+LIBSRCS=array.c
+APPSRCS=main.c $(LIBSRCS)
 
 all:$(BUILD_DIR)app lib
 
@@ -21,7 +22,7 @@ $(BUILD_DIR):
 $(BUILD_DIR)app:$(patsubst %.c,$(BUILD_DIR)%.o,$(APPSRCS))
 	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
 
-$(BUILD_DIR)libarray.a:$(patsubst %.c,$(BUILD_DIR)%.o,$(APPSRCS))
+$(BUILD_DIR)libarray.a:$(patsubst %.c,$(BUILD_DIR)%.o,$(LIBSRCS))
 	$(AR) -rcs -o $@ $^ $(LIBS)
 
 $(patsubst %.c,$(BUILD_DIR)%.d,$(APPSRCS)):
