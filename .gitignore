@@ -1,5 +1,6 @@
-.vscode
-*.o
-*.d
-app
+/.vscode
+/*.o
+/*.d
+/app
 /build
+/libarray.a

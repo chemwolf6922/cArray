@@ -1,32 +1,23 @@
-CC?=gcc
-AR?=ar
-BUILD_DIR?=$(shell pwd)/build/
-
 CFLAGS?=-O3
-LDFLAGS=
-LIBS=
+CFLAGS+=-MMD -MP
+LDFLAGS?=
+LIB_SRC=array.c
+TEST_SRC=main.c $(LIB_SRC)
 
-LIBSRCS=array.c
-APPSRCS=main.c $(LIBSRCS)
+all:test lib
 
-all:$(BUILD_DIR)app lib
+test:$(patsubst %.c,%.o,$(TEST_SRC))
+	$(CC) $(LDFLAGS) -o $@ $^
 
-lib:$(BUILD_DIR)libarray.a
+lib:libarray.a
 
-$(BUILD_DIR)%.o:%.c $(BUILD_DIR)%.d | $(BUILD_DIR)
-	$(CC) -MT $@ -MMD -MP -MF $(BUILD_DIR)$*.d $(CFLAGS) -o $@ -c $<
+libarray.a:$(patsubst %.c,%.o,$(LIB_SRC))
+	$(AR) -rcs -o $@ $^
 
-$(BUILD_DIR):
-	@mkdir -p $@
+%.o:%.c
+	$(CC) $(CFLAGS) -c $<
 
-$(BUILD_DIR)app:$(patsubst %.c,$(BUILD_DIR)%.o,$(APPSRCS))
-	$(CC) $(LDFLAGS) -o $@ $^ $(LIBS)
-
-$(BUILD_DIR)libarray.a:$(patsubst %.c,$(BUILD_DIR)%.o,$(LIBSRCS))
-	$(AR) -rcs -o $@ $^ $(LIBS)
-
-$(patsubst %.c,$(BUILD_DIR)%.d,$(APPSRCS)):
-include $(patsubst %.c,$(BUILD_DIR)%.d,$(APPSRCS))
+-include $(TEST_SRC:.c=.d)
 
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -f *.o *.d test libarray.a 
